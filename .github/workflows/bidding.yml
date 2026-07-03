@@ -2,15 +2,9 @@ name: 地质海洋招投标情报采集
 
 on:
   schedule:
-    # 每4小时运行一次 (北京时间8/12/16/20/0/4点)
-    - cron: '0 */4 * * *'
+    # 每周一北京时间 8:00 运行
+    - cron: '0 0 * * 1'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/weekly_report_*.html'
-      - '.gitignore'
-      - 'README.md'
 
 # 确保同一时间只有一个workflow在运行
 concurrency:
