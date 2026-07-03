@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+
+# Data (DB is synced via cache, not git)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Reports (deployed via GitHub Pages separately)
+reports/
+docs/weekly_report_*.html
+
+# Local config
+notifier_config.json
+napcat_config.json
+
+# NapCat related
+napcat/
+start_napcat.bat
+NapCat.Shell.zip
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temp
+tmp/

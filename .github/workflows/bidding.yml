@@ -1,0 +1,80 @@
+name: 地质海洋招投标情报采集
+
+on:
+  schedule:
+    # 每4小时运行一次 (北京时间8/12/16/20/0/4点)
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/weekly_report_*.html'
+      - '.gitignore'
+      - 'README.md'
+
+# 确保同一时间只有一个workflow在运行
+concurrency:
+  group: bidding-pipeline
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+      actions: write
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 恢复数据库缓存
+        id: cache-db
+        uses: actions/cache/restore@v4
+        with:
+          path: data/bidding_intel.db
+          key: bidding-db-${{ github.run_id }}
+          restore-keys: bidding-db-
+
+      - name: 创建目录
+        run: mkdir -p data reports docs
+
+      - name: 采集与分析
+        id: run
+        run: |
+          python main.py --days 2 --no-push --pages 2>&1 | tee run.log
+          echo "DB_SIZE=$(du -h data/bidding_intel.db 2>/dev/null | cut -f1 || echo '0')" >> $GITHUB_OUTPUT
+
+      - name: 保存数据库缓存
+        uses: actions/cache/save@v4
+        with:
+          path: data/bidding_intel.db
+          key: bidding-db-${{ github.run_id }}
+
+      - name: 部署到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          force_orphan: false
+          commit_message: "deploy: ${{ github.event.repository.updated_at }}"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: 输出摘要
+        run: |
+          echo "========== 执行摘要 =========="
+          echo "数据库大小: ${{ steps.run.outputs.DB_SIZE }}"
+          echo "报告地址: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          grep -E "(新增|总计|报告已保存)" run.log || true
+          echo "================================"
