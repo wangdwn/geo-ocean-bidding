@@ -43,10 +43,11 @@ jobs:
       - name: 创建目录
         run: mkdir -p data reports docs
 
-      - name: 采集与分析
+      - name: 采集与分析（演示模式）
         id: run
+        timeout-minutes: 5
         run: |
-          python main.py --days 2 --no-push --pages 2>&1 | tee run.log
+          python main.py --demo --days 7 --no-push --pages 2>&1 | tee run.log
           echo "DB_SIZE=$(du -h data/bidding_intel.db 2>/dev/null | cut -f1 || echo '0')" >> $GITHUB_OUTPUT
 
       - name: 保存数据库缓存
