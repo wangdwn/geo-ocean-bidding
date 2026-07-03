@@ -80,19 +80,32 @@ def run_analyze(db: Database):
     logger.info("分析完成")
 
 
+def get_issue_number(db: Database) -> int:
+    """获取当前期号(已有报告数+1)"""
+    try:
+        with db.get_conn() as conn:
+            cursor = conn.execute("SELECT COUNT(*) FROM analysis_reports")
+            count = cursor.fetchone()[0]
+            return count + 1
+    except Exception:
+        return 1
+
+
 def run_report(db: Database, db_path: str, report_dir: str, days: int = 7) -> str:
     """生成报告"""
     logger = logging.getLogger("report")
     logger.info("=== 生成周度报告 ===")
+    
+    issue_number = get_issue_number(db)
     
     engine = AnalysisEngine(db)
     summary = engine.generate_weekly_summary(days=days)
     gaps = engine.identify_chain_gaps()
     
     generator = ReportGenerator(report_dir, db_path)
-    report_path = generator.generate(summary, gaps)
+    report_path = generator.generate(summary, gaps, issue_number=issue_number)
     
-    logger.info(f"报告已保存至: {report_path}")
+    logger.info(f"第{issue_number}期报告已保存至: {report_path}")
     
     # 保存报告记录到数据库
     if "error" not in summary:
@@ -125,18 +138,21 @@ def run_report(db: Database, db_path: str, report_dir: str, days: int = 7) -> st
 
 
 def generate_pages_index(pages_dir: str, db: Database):
-    """生成 GitHub Pages 索引页"""
+    """生成 GitHub Pages 索引页 - 海洋地质主题"""
     import glob as _glob
+    _log = logging.getLogger("pages_index")
     reports = sorted(_glob.glob(os.path.join(pages_dir, "weekly_report_*.html")), reverse=True)
     
     total = db.get_all_notices_count()
+    report_count = len(reports)
     
     # 获取最近统计
     rows_html = ""
-    for rp in reports[:10]:
+    for i, rp in enumerate(reports[:10]):
         fname = os.path.basename(rp)
         date_str = fname.replace("weekly_report_", "").replace(".html", "")
-        rows_html += f'<tr><td><a href="{fname}">{date_str}</a></td><td>{os.path.getsize(rp)//1024} KB</td></tr>\n'
+        issue = report_count - i
+        rows_html += f'<tr><td><span class="issue-tag">第{issue}期</span></td><td><a href="{fname}">{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}</a></td><td>{os.path.getsize(rp)//1024} KB</td></tr>\n'
     
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -145,63 +161,144 @@ def generate_pages_index(pages_dir: str, db: Database):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>广东省地质海洋企业招投标情报系统</title>
 <style>
+:root {{
+  --ocean-deep: #062040;
+  --ocean-dark: #0a2f5a;
+  --ocean-mid: #0d6b7d;
+  --ocean-light: #14a085;
+  --coral: #e07050;
+  --gold: #f0c040;
+}}
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#e0e6ed;min-height:100vh;padding:20px}}
-.container{{max-width:900px;margin:0 auto}}
-.header{{text-align:center;padding:40px 20px 20px}}
-.header h1{{font-size:2em;color:#4fc3f7;margin-bottom:8px}}
-.header p{{color:#90a4ae}}
-.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}}
-.card{{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;text-align:center}}
-.card .num{{font-size:2.2em;font-weight:bold;color:#4fc3f7}}
-.card .label{{color:#78909c;margin-top:4px}}
-.section{{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;margin:16px 0}}
-.section h2{{color:#4fc3f7;margin-bottom:16px;font-size:1.2em}}
+body{{
+  font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+  background:linear-gradient(160deg,#031528 0%,#062040 25%,#0a2f5a 60%,#0d4a6e 100%);
+  color:#d8e4ee;min-height:100vh;
+}}
+.container{{max-width:900px;margin:0 auto;padding:20px}}
+.header{{
+  text-align:center;padding:48px 20px 24px;
+  position:relative;
+}}
+.header::after{{
+  content:'';display:block;width:80px;height:3px;
+  background:linear-gradient(90deg,var(--ocean-mid),var(--ocean-light));
+  margin:20px auto 0;border-radius:2px;
+}}
+.header h1{{font-size:2em;color:#e8f4f8;margin-bottom:8px;letter-spacing:2px}}
+.header p{{color:#7a9aaf;font-size:1.05em}}
+.header .refresh{{
+  display:inline-block;margin-top:14px;padding:5px 18px;
+  background:rgba(79,195,247,0.12);border:1px solid rgba(79,195,247,0.2);
+  border-radius:20px;color:#81d4fa;font-size:.82em;
+}}
+.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}}
+.card{{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:28px 20px;text-align:center;
+  backdrop-filter:blur(10px);transition:transform .2s,border-color .2s;
+}}
+.card:hover{{transform:translateY(-2px);border-color:rgba(79,195,247,0.3)}}
+.card .num{{font-size:2.4em;font-weight:800;color:#4fc3f7;line-height:1.1}}
+.card .label{{color:#5a7a8f;margin-top:6px;font-size:.92em}}
+.section{{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;padding:28px;margin:16px 0;
+}}
+.section h2{{
+  color:#4fc3f7;margin-bottom:18px;font-size:1.15em;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+}}
+.section h2::before{{
+  content:'';display:inline-block;width:4px;height:18px;
+  background:var(--ocean-mid);border-radius:2px;
+}}
 table{{width:100%;border-collapse:collapse}}
-th,td{{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}}
-th{{color:#78909c;font-weight:normal}}
-a{{color:#4fc3f7;text-decoration:none}}
-a:hover{{text-decoration:underline}}
-.footer{{text-align:center;padding:30px;color:#546e7a;font-size:.85em}}
-.refresh{{display:inline-block;margin-top:12px;padding:6px 16px;background:rgba(79,195,247,0.15);border-radius:20px;color:#4fc3f7;font-size:.85em}}
+th,td{{padding:12px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05)}}
+th{{color:#5a7a8f;font-weight:600;font-size:.85em;text-transform:uppercase;letter-spacing:.5px}}
+tbody tr:hover{{background:rgba(79,195,247,0.06)}}
+.issue-tag{{
+  display:inline-block;padding:2px 10px;border-radius:10px;
+  background:rgba(224,112,80,0.2);color:#f09070;font-size:.82em;font-weight:700;
+}}
+a{{color:#4fc3f7;text-decoration:none;transition:color .15s}}
+a:hover{{color:#81d4fa;text-decoration:underline}}
+.chain-row{{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}}
+.chain-row:last-child{{border-bottom:none}}
+.chain-dot{{
+  width:12px;height:12px;border-radius:3px;flex-shrink:0;
+}}
+.chain-dot.up{{background:#3498db}}
+.chain-dot.mid{{background:#e67e22}}
+.chain-dot.down{{background:#27ae60}}
+.chain-dot.inv{{background:#8e44ad}}
+.chain-name{{font-weight:600;min-width:140px;font-size:.95em}}
+.chain-desc{{color:#5a7a8f;font-size:.88em}}
+.footer{{
+  text-align:center;padding:30px;color:#3a5a6f;font-size:.85em;
+  border-top:1px solid rgba(255,255,255,0.05);margin-top:24px;
+}}
+.waves{{
+  position:relative;height:40px;margin-top:-1px;overflow:hidden;
+}}
+.waves svg{{display:block;width:100%;height:100%}}
 </style>
 </head>
 <body>
+<div class="waves">
+  <svg viewBox="0 0 1440 40" preserveAspectRatio="none">
+    <path d="M0,20 C240,30 480,5 720,18 C960,30 1200,8 1440,20 L1440,40 L0,40 Z" fill="rgba(255,255,255,0.02)"/>
+  </svg>
+</div>
 <div class="container">
 <div class="header">
 <h1>广东省地质海洋企业招投标情报系统</h1>
-<p>自动采集 · 智能分析 · 商机发现</p>
+<p>自动采集 · 智能分析 · 商机发现 · 每周更新</p>
 <div class="refresh">最后更新: {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}</div>
 </div>
 <div class="cards">
 <div class="card"><div class="num">{total}</div><div class="label">累计公告</div></div>
-<div class="card"><div class="num">{len(reports)}</div><div class="label">历史报告</div></div>
+<div class="card"><div class="num">{report_count}</div><div class="label">历史报告</div></div>
 <div class="card"><div class="num">4</div><div class="label">数据源</div></div>
 <div class="card"><div class="num">5</div><div class="label">评分维度</div></div>
 </div>
 <div class="section">
 <h2>最新报告</h2>
 <table>
-<thead><tr><th>日期</th><th>大小</th></tr></thead>
-<tbody>{rows_html or '<tr><td colspan="2" style="color:#546e7a;">暂无报告</td></tr>'}</tbody>
+<thead><tr><th>期号</th><th>日期</th><th>大小</th></tr></thead>
+<tbody>{rows_html or '<tr><td colspan="3" style="color:#3a5a6f;text-align:center;padding:24px;">暂无报告，首次采集后将自动生成</td></tr>'}</tbody>
 </table>
 </div>
 <div class="section">
 <h2>产业链覆盖</h2>
-<table>
-<tr><td>上游 · 勘探与装备</td><td>地质勘探、海洋调查、装备制造、材料供应</td></tr>
-<tr><td>中游 · 工程与施工</td><td>海洋工程、地质施工、港口航道、海上能源</td></tr>
-<tr><td>下游 · 监测与服务</td><td>环境监测、技术服务、数据信息、运维咨询</td></tr>
-<tr><td>招商引资</td><td>产业园区、投资合作、特许经营</td></tr>
-</table>
+<div class="chain-row">
+  <span class="chain-dot up"></span>
+  <span class="chain-name">上游 · 勘探与装备</span>
+  <span class="chain-desc">地质勘探、海洋调查、装备制造、材料供应</span>
+</div>
+<div class="chain-row">
+  <span class="chain-dot mid"></span>
+  <span class="chain-name">中游 · 工程与施工</span>
+  <span class="chain-desc">海洋工程、地质施工、港口航道、海上能源</span>
+</div>
+<div class="chain-row">
+  <span class="chain-dot down"></span>
+  <span class="chain-name">下游 · 监测与服务</span>
+  <span class="chain-desc">环境监测、技术服务、数据信息、运维咨询</span>
+</div>
+<div class="chain-row">
+  <span class="chain-dot inv"></span>
+  <span class="chain-name">招商引资</span>
+  <span class="chain-desc">产业园区、投资合作、特许经营</span>
+</div>
 </div>
 <div class="section">
 <h2>数据来源</h2>
-<p>广东省招标投标监管网 · 广东省公共资源交易平台 · 广州公共资源交易中心 · 中国招标投标公共服务平台</p>
+<p style="color:#5a7a8f;line-height:2;">广东省招标投标监管网 &nbsp;·&nbsp; 广东省公共资源交易平台 &nbsp;·&nbsp; 广州公共资源交易中心 &nbsp;·&nbsp; 中国招标投标公共服务平台</p>
 </div>
 <div class="footer">
 <p>本系统自动采集公开招标信息并生成分析报告，仅供参考。投资决策请以官方公告为准。</p>
-<p>Powered by GitHub Actions | 2026</p>
+<p style="margin-top:6px;">Powered by GitHub Actions · 2026</p>
 </div>
 </div>
 </body>
@@ -210,7 +307,7 @@ a:hover{{text-decoration:underline}}
     index_path = os.path.join(pages_dir, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
         f.write(html)
-    logger.info(f"索引页已生成: {index_path}")
+    _log.info(f"索引页已生成: {index_path}")
 
 
 def main():
