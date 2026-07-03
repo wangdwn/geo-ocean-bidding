@@ -34,8 +34,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: data/bidding_intel.db
-          key: bidding-db-${{ github.run_id }}
-          restore-keys: bidding-db-
+          key: bidding-db-v2-${{ github.run_id }}
+          restore-keys: bidding-db-v2-
 
       - name: 创建目录
         run: mkdir -p data reports docs
@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: data/bidding_intel.db
-          key: bidding-db-${{ github.run_id }}
+          key: bidding-db-v2-${{ github.run_id }}
 
       - name: 上传 Pages 产物
         uses: actions/upload-pages-artifact@v3
