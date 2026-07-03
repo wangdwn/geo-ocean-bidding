@@ -6,23 +6,63 @@
 <title>广东省地质海洋企业招投标情报系统</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#e0e6ed;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.container{text-align:center;padding:40px}
-h1{font-size:2.5em;color:#4fc3f7;margin-bottom:12px}
-p{color:#90a4ae;margin-bottom:24px}
-.loading{display:inline-block;width:40px;height:40px;border:3px solid rgba(79,195,247,0.2);border-top-color:#4fc3f7;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.info{margin-top:30px;color:#546e7a;font-size:.9em}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:linear-gradient(135deg,#0a1628,#1a3a5c);color:#e0e6ed;min-height:100vh;padding:20px}
+.container{max-width:900px;margin:0 auto}
+.header{text-align:center;padding:40px 20px 20px}
+.header h1{font-size:2em;color:#4fc3f7;margin-bottom:8px}
+.header p{color:#90a4ae}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
+.card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;text-align:center}
+.card .num{font-size:2.2em;font-weight:bold;color:#4fc3f7}
+.card .label{color:#78909c;margin-top:4px}
+.section{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;margin:16px 0}
+.section h2{color:#4fc3f7;margin-bottom:16px;font-size:1.2em}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}
+th{color:#78909c;font-weight:normal}
+a{color:#4fc3f7;text-decoration:none}
+a:hover{text-decoration:underline}
+.footer{text-align:center;padding:30px;color:#546e7a;font-size:.85em}
+.refresh{display:inline-block;margin-top:12px;padding:6px 16px;background:rgba(79,195,247,0.15);border-radius:20px;color:#4fc3f7;font-size:.85em}
 </style>
 </head>
 <body>
 <div class="container">
+<div class="header">
 <h1>广东省地质海洋企业招投标情报系统</h1>
-<p>系统初始化中，首次报告将在下次自动采集后生成。</p>
-<div class="loading"></div>
-<div class="info">
-<p>数据来源: 广东省招标投标监管网 · 广州公共资源交易中心 · 中国招标投标公共服务平台</p>
-<p>自动采集周期: 每4小时 | Powered by GitHub Actions</p>
+<p>自动采集 · 智能分析 · 商机发现</p>
+<div class="refresh">最后更新: 2026-07-03 07:06 UTC</div>
+</div>
+<div class="cards">
+<div class="card"><div class="num">100</div><div class="label">累计公告</div></div>
+<div class="card"><div class="num">1</div><div class="label">历史报告</div></div>
+<div class="card"><div class="num">4</div><div class="label">数据源</div></div>
+<div class="card"><div class="num">5</div><div class="label">评分维度</div></div>
+</div>
+<div class="section">
+<h2>最新报告</h2>
+<table>
+<thead><tr><th>日期</th><th>大小</th></tr></thead>
+<tbody><tr><td><a href="weekly_report_20260703.html">20260703</a></td><td>46 KB</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h2>产业链覆盖</h2>
+<table>
+<tr><td>上游 · 勘探与装备</td><td>地质勘探、海洋调查、装备制造、材料供应</td></tr>
+<tr><td>中游 · 工程与施工</td><td>海洋工程、地质施工、港口航道、海上能源</td></tr>
+<tr><td>下游 · 监测与服务</td><td>环境监测、技术服务、数据信息、运维咨询</td></tr>
+<tr><td>招商引资</td><td>产业园区、投资合作、特许经营</td></tr>
+</table>
+</div>
+<div class="section">
+<h2>数据来源</h2>
+<p>广东省招标投标监管网 · 广东省公共资源交易平台 · 广州公共资源交易中心 · 中国招标投标公共服务平台</p>
+</div>
+<div class="footer">
+<p>本系统自动采集公开招标信息并生成分析报告，仅供参考。投资决策请以官方公告为准。</p>
+<p>Powered by GitHub Actions | 2026</p>
 </div>
 </div>
 </body>
