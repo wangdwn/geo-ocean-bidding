@@ -254,6 +254,10 @@ def main():
             shutil.copy2(report_path, pages_path)
             # 生成索引页
             generate_pages_index(pages_dir, db)
+            # 确保 .nojekyll 存在，避免 GitHub Pages 用 Jekyll 处理
+            nojekyll = os.path.join(pages_dir, ".nojekyll")
+            if not os.path.exists(nojekyll):
+                open(nojekyll, "w").close()
             logger.info(f"GitHub Pages 已更新: {pages_path}")
 
         # ===== QQ推送(仅本地环境) =====
