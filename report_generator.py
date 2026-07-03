@@ -450,7 +450,7 @@ REPORT_TEMPLATE = r"""<!DOCTYPE html>
         </div>
         <div class="opp-body">
           <div class="opp-title">
-            <a href="{{ opp.source_url }}" target="_blank">{{ opp.title[:80] }}</a>
+            <span class="opp-link-text">{{ opp.title[:80] }}</span>
           </div>
           <div class="opp-meta">
             <span class="meta-item">📍 {{ opp.region or '广东' }}</span>
