@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://wangdwn.github.io/design-system/nav.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
   font-family:var(--font-sans);
   background:var(--bg);
@@ -22,6 +23,16 @@ body{
   font-size:var(--text-xs);font-weight:700;letter-spacing:.12em;
   text-transform:uppercase;color:var(--pan-b);margin-bottom:var(--s-2);
 }
+.page-nav{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  margin:var(--s-4) 0 var(--s-2);
+}
+.page-nav a{
+  color:var(--pan-b);text-decoration:none;font-size:var(--text-sm);
+  padding:6px 14px;border-radius:999px;
+  border:1px solid color-mix(in srgb, var(--pan-b) 28%, var(--border));
+}
+.page-nav a:hover{background:color-mix(in srgb, var(--pan-b) 12%, var(--card));text-decoration:none}
 .header{
   text-align:center;padding:var(--s-10) var(--s-5) var(--s-6);
   position:relative;
@@ -39,14 +50,14 @@ body{
   border:1px solid color-mix(in srgb, var(--pan-b) 28%, var(--border));
   border-radius:999px;color:var(--pan-b);font-size:var(--text-sm);
 }
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--s-4);margin:var(--s-6) 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--s-4);margin:var(--s-6) 0}
 .card{
   background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:28px 20px;text-align:center;
+  border-radius:var(--radius-lg);padding:24px 16px;text-align:center;
   box-shadow:var(--shadow-sm);transition:transform .2s,border-color .2s,box-shadow .2s;
 }
 .card:hover{transform:translateY(-2px);border-color:var(--pan-b);box-shadow:var(--shadow)}
-.card .num{font-size:2.4em;font-weight:800;color:var(--pan-b);line-height:1.1}
+.card .num{font-size:2.2em;font-weight:800;color:var(--pan-b);line-height:1.1}
 .card .label{color:var(--muted);margin-top:6px;font-size:var(--text-md)}
 .section{
   background:var(--card);border:1px solid var(--border);
@@ -61,8 +72,17 @@ body{
   content:'';display:inline-block;width:4px;height:18px;
   background:var(--pan-b);border-radius:2px;
 }
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.filter-btn{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--muted);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:var(--text-sm);
+}
+.filter-btn.active,.filter-btn:hover{
+  border-color:var(--pan-b);color:var(--pan-b);
+  background:color-mix(in srgb, var(--pan-b) 12%, var(--card));
+}
 table{width:100%;border-collapse:collapse}
-th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+th,td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
 th{color:var(--muted);font-weight:600;font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.5px}
 tbody tr:hover{background:var(--bg-subtle)}
 .issue-tag{
@@ -70,13 +90,20 @@ tbody tr:hover{background:var(--bg-subtle)}
   background:color-mix(in srgb, var(--pan-b) 14%, var(--card));
   color:var(--pan-b);font-size:var(--text-sm);font-weight:700;
 }
+.cat{
+  display:inline-block;padding:2px 8px;border-radius:8px;font-size:.75em;white-space:nowrap;
+}
+.cat.upstream{background:color-mix(in srgb, #3498db 18%, var(--card));color:#1d6fa5}
+.cat.midstream{background:color-mix(in srgb, #e67e22 18%, var(--card));color:#b85c12}
+.cat.downstream{background:color-mix(in srgb, #27ae60 18%, var(--card));color:#1e8449}
+.cat.investment{background:color-mix(in srgb, #8e44ad 18%, var(--card));color:#6c3483}
 a{color:var(--accent);text-decoration:none;transition:color .15s}
 a:hover{color:var(--primary);text-decoration:underline}
+.muted{color:var(--muted)}
+.note{color:var(--muted);font-size:var(--text-sm);line-height:1.7}
 .chain-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
 .chain-row:last-child{border-bottom:none}
-.chain-dot{
-  width:12px;height:12px;border-radius:3px;flex-shrink:0;
-}
+.chain-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 .chain-dot.up{background:#3498db}
 .chain-dot.mid{background:#e67e22}
 .chain-dot.down{background:#27ae60}
@@ -87,9 +114,15 @@ a:hover{color:var(--primary);text-decoration:underline}
   text-align:center;padding:30px;color:var(--muted);font-size:var(--text-sm);
   border-top:1px solid var(--border);margin-top:var(--s-6);
 }
+.title-cell{max-width:420px}
+.table-wrap{overflow-x:auto}
+@media (max-width:720px){
+  .header h1{font-size:var(--text-xl)}
+  .hide-sm{display:none}
+}
 </style>
 </head>
-<body>
+<body data-page="bidding-radar">
 <nav class="os-nav" aria-label="海洋系列">
   <div class="os-nav__inner">
     <a class="os-nav__brand" href="https://wangdwn.github.io/">
@@ -106,27 +139,60 @@ a:hover{color:var(--primary);text-decoration:underline}
   </div>
 </nav>
 <div class="container">
+<nav class="page-nav" aria-label="页面导航">
+  <a href="#listings">公告列表</a>
+  <a href="#reports">历史报告</a>
+  <a href="#chain">产业链</a>
+  <a href="#sources">数据来源</a>
+</nav>
 <div class="header">
 <div class="kicker">B · 经营盘 · 招标雷达</div>
 <h1>广东省地质海洋企业招投标情报系统</h1>
-<p>自动采集 · 智能分析 · 商机发现 · 每周更新</p>
-<div class="refresh">最后更新: 2026-07-03 15:59 UTC</div>
+<p>公开采购雷达 · 地质 / 海洋 / 测绘 · 广州及广东</p>
+<div class="refresh" id="data-stamp">数据更新于 2026-09-04</div>
 </div>
 <div class="cards">
-<div class="card"><div class="num">180</div><div class="label">累计公告</div></div>
-<div class="card"><div class="num">1</div><div class="label">历史报告</div></div>
-<div class="card"><div class="num">4</div><div class="label">数据源</div></div>
-<div class="card"><div class="num">5</div><div class="label">评分维度</div></div>
+<div class="card"><div class="num" id="stat-notices">-</div><div class="label">核验公告</div></div>
+<div class="card"><div class="num" id="stat-gz">-</div><div class="label">广州相关</div></div>
+<div class="card"><div class="num" id="stat-reports">1</div><div class="label">历史报告</div></div>
+<div class="card"><div class="num">4</div><div class="label">拟对接数据源</div></div>
 </div>
-<div class="section">
-<h2>最新报告</h2>
+<div class="section" id="listings">
+<h2>公开招标公告</h2>
+<p class="note" style="margin-bottom:14px;">下列条目均来自可点击的公开页面；未编造采购记录。招标人/金额若在原文摘要中未披露则显示为“未公开”。</p>
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-chain="all">全部</button>
+  <button class="filter-btn" data-chain="upstream">上游 · 勘探与装备</button>
+  <button class="filter-btn" data-chain="midstream">中游 · 工程与施工</button>
+  <button class="filter-btn" data-chain="downstream">下游 · 监测与服务</button>
+</div>
+<div class="table-wrap">
 <table>
-<thead><tr><th>期号</th><th>日期</th><th>大小</th></tr></thead>
-<tbody><tr><td><span class="issue-tag">第1期</span></td><td><a href="weekly_report_20260703.html">2026-07-03</a></td><td>53 KB</td></tr>
+<thead>
+<tr>
+  <th>日期</th>
+  <th>项目</th>
+  <th>招标人</th>
+  <th class="hide-sm">地区</th>
+  <th>分类</th>
+  <th>原文</th>
+</tr>
+</thead>
+<tbody id="notice-rows">
+<tr><td colspan="6" class="muted" style="text-align:center;padding:24px;">正在加载公开数据…</td></tr>
 </tbody>
 </table>
 </div>
-<div class="section">
+</div>
+<div class="section" id="reports">
+<h2>最新报告</h2>
+<table>
+<thead><tr><th>期号</th><th>日期</th><th>大小</th></tr></thead>
+<tbody id="report-rows"><tr><td><span class="issue-tag">第1期</span></td><td><a href="weekly_report_20260904.html">2026-09-04</a></td><td>45 KB</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="chain">
 <h2>产业链覆盖</h2>
 <div class="chain-row">
   <span class="chain-dot up"></span>
@@ -149,14 +215,90 @@ a:hover{color:var(--primary);text-decoration:underline}
   <span class="chain-desc">产业园区、投资合作、特许经营</span>
 </div>
 </div>
-<div class="section">
-<h2>数据来源</h2>
-<p style="color:var(--muted);line-height:2;">广东省招标投标监管网 &nbsp;·&nbsp; 广东省公共资源交易平台 &nbsp;·&nbsp; 广州公共资源交易中心 &nbsp;·&nbsp; 中国招标投标公共服务平台</p>
+<div class="section" id="sources">
+<h2>数据来源与采集说明</h2>
+<p class="note">计划对接：广东省招标投标监管网 · 广东省公共资源交易平台 · 广州公共资源交易中心 · 中国招标投标公共服务平台 / 中国政府采购网。</p>
+<p class="note" id="collection-note" style="margin-top:10px;">本次刷新已核验中国政府采购网部分公告原文；广东省政府采购网超时，广州公共资源交易中心返回 WAF 403，省级交易平台搜索接口未返回列表。详见 <a href="data/notices.json">data/notices.json</a> 中 collection_notes。</p>
 </div>
 <div class="footer">
-<p>本系统自动采集公开招标信息并生成分析报告，仅供参考。投资决策请以官方公告为准。</p>
-<p style="margin-top:6px;">Powered by GitHub Actions · 2026</p>
+<p>本系统整理公开招标信息，仅供参考。投资与投标决策请以官方公告为准。</p>
+<p style="margin-top:6px;">Powered by GitHub Pages · 2026</p>
 </div>
 </div>
+<script>
+(function () {
+  const CHAIN_CLASS = {
+    upstream: "upstream",
+    midstream: "midstream",
+    downstream: "downstream",
+    investment: "investment"
+  };
+  let allNotices = [];
+  let activeChain = "all";
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function render(notices) {
+    const tbody = document.getElementById("notice-rows");
+    const rows = notices.slice().sort(function (a, b) {
+      return String(b.publish_date).localeCompare(String(a.publish_date));
+    });
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:24px;">暂无匹配公告</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(function (n) {
+      const cat = n.chain_position || "";
+      const buyer = n.tenderer ? esc(n.tenderer) : '<span class="muted">未公开</span>';
+      return "<tr>" +
+        "<td>" + esc(n.publish_date) + "</td>" +
+        '<td class="title-cell">' + esc(n.title) + "</td>" +
+        "<td>" + buyer + "</td>" +
+        '<td class="hide-sm">' + esc(n.region || "广东") + "</td>" +
+        '<td><span class="cat ' + esc(CHAIN_CLASS[cat] || "") + '">' + esc(n.category || cat) + "</span></td>" +
+        '<td><a href="' + esc(n.source_url) + '" target="_blank" rel="noopener noreferrer">原文</a></td>' +
+        "</tr>";
+    }).join("");
+  }
+
+  function applyFilter() {
+    if (activeChain === "all") render(allNotices);
+    else render(allNotices.filter(function (n) { return n.chain_position === activeChain; }));
+  }
+
+  document.getElementById("filters").addEventListener("click", function (e) {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    activeChain = btn.getAttribute("data-chain");
+    document.querySelectorAll(".filter-btn").forEach(function (b) {
+      b.classList.toggle("active", b === btn);
+    });
+    applyFilter();
+  });
+
+  fetch("data/notices.json")
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      allNotices = data.notices || [];
+      const stamp = data.updated_at || "2026-09-04";
+      document.getElementById("data-stamp").textContent = "数据更新于 " + stamp;
+      document.getElementById("stat-notices").textContent = allNotices.length;
+      document.getElementById("stat-gz").textContent = allNotices.filter(function (n) {
+        return (n.region || "").indexOf("广州") >= 0 || (n.title || "").indexOf("广州") >= 0;
+      }).length;
+      applyFilter();
+    })
+    .catch(function () {
+      document.getElementById("notice-rows").innerHTML =
+        '<tr><td colspan="6" class="muted" style="text-align:center;padding:24px;">公开数据文件未能加载，请稍后重试或查看 data/notices.json</td></tr>';
+    });
+})();
+</script>
 </body>
 </html>

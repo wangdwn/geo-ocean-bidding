@@ -436,7 +436,11 @@ REPORT_TEMPLATE = r"""<!DOCTYPE html>
         </div>
         <div class="opp-body">
           <div class="opp-title">
+            {% if opp.source_url and opp.source_url.startswith('http') %}
+            <a href="{{ opp.source_url }}" target="_blank" rel="noopener noreferrer">{{ opp.title[:80] }}</a>
+            {% else %}
             <span class="opp-link-text">{{ opp.title[:80] }}</span>
+            {% endif %}
           </div>
           <div class="opp-meta">
             <span class="meta-item">📍 {{ opp.region or '广东' }}</span>
