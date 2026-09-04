@@ -18,6 +18,7 @@ from scraper import DataCollector
 from analyzer import AnalysisEngine
 from report_generator import ReportGenerator
 from demo_data import generate_demo_data
+from ocean_chrome import DS_HEAD, OS_NAV
 
 # QQ推送可选(仅在本地环境使用)
 try:
@@ -159,71 +160,72 @@ def generate_pages_index(pages_dir: str, db: Database):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>广东省地质海洋企业招投标情报系统</title>
+<title>广东省地质海洋企业招投标情报系统 · 经营盘</title>
+{DS_HEAD}
 <style>
-:root {{
-  --ocean-deep: #062040;
-  --ocean-dark: #0a2f5a;
-  --ocean-mid: #0d6b7d;
-  --ocean-light: #14a085;
-  --coral: #e07050;
-  --gold: #f0c040;
-}}
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{
-  font-family:"Microsoft YaHei","PingFang SC",sans-serif;
-  background:linear-gradient(160deg,#031528 0%,#062040 25%,#0a2f5a 60%,#0d4a6e 100%);
-  color:#d8e4ee;min-height:100vh;
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--fg);
+  min-height:100vh;
 }}
-.container{{max-width:900px;margin:0 auto;padding:20px}}
+.container{{max-width:var(--maxw);margin:0 auto;padding:var(--s-5)}}
+.kicker{{
+  font-size:var(--text-xs);font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--pan-b);margin-bottom:var(--s-2);
+}}
 .header{{
-  text-align:center;padding:48px 20px 24px;
+  text-align:center;padding:var(--s-10) var(--s-5) var(--s-6);
   position:relative;
 }}
 .header::after{{
   content:'';display:block;width:80px;height:3px;
-  background:linear-gradient(90deg,var(--ocean-mid),var(--ocean-light));
-  margin:20px auto 0;border-radius:2px;
+  background:var(--pan-b);
+  margin:var(--s-5) auto 0;border-radius:2px;
 }}
-.header h1{{font-size:2em;color:#e8f4f8;margin-bottom:8px;letter-spacing:2px}}
-.header p{{color:#7a9aaf;font-size:1.05em}}
+.header h1{{font-size:var(--text-2xl);color:var(--primary);margin-bottom:var(--s-2);letter-spacing:2px}}
+.header p{{color:var(--muted);font-size:var(--text-lg)}}
 .header .refresh{{
   display:inline-block;margin-top:14px;padding:5px 18px;
-  background:rgba(79,195,247,0.12);border:1px solid rgba(79,195,247,0.2);
-  border-radius:20px;color:#81d4fa;font-size:.82em;
+  background:color-mix(in srgb, var(--pan-b) 12%, var(--card));
+  border:1px solid color-mix(in srgb, var(--pan-b) 28%, var(--border));
+  border-radius:999px;color:var(--pan-b);font-size:var(--text-sm);
 }}
-.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}}
+.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--s-4);margin:var(--s-6) 0}}
 .card{{
-  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
-  border-radius:14px;padding:28px 20px;text-align:center;
-  backdrop-filter:blur(10px);transition:transform .2s,border-color .2s;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:28px 20px;text-align:center;
+  box-shadow:var(--shadow-sm);transition:transform .2s,border-color .2s,box-shadow .2s;
 }}
-.card:hover{{transform:translateY(-2px);border-color:rgba(79,195,247,0.3)}}
-.card .num{{font-size:2.4em;font-weight:800;color:#4fc3f7;line-height:1.1}}
-.card .label{{color:#5a7a8f;margin-top:6px;font-size:.92em}}
+.card:hover{{transform:translateY(-2px);border-color:var(--pan-b);box-shadow:var(--shadow)}}
+.card .num{{font-size:2.4em;font-weight:800;color:var(--pan-b);line-height:1.1}}
+.card .label{{color:var(--muted);margin-top:6px;font-size:var(--text-md)}}
 .section{{
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
-  border-radius:14px;padding:28px;margin:16px 0;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:28px;margin:var(--s-4) 0;
+  box-shadow:var(--shadow-sm);
 }}
 .section h2{{
-  color:#4fc3f7;margin-bottom:18px;font-size:1.15em;font-weight:700;
+  color:var(--primary);margin-bottom:18px;font-size:var(--text-lg);font-weight:700;
   display:flex;align-items:center;gap:8px;
 }}
 .section h2::before{{
   content:'';display:inline-block;width:4px;height:18px;
-  background:var(--ocean-mid);border-radius:2px;
+  background:var(--pan-b);border-radius:2px;
 }}
 table{{width:100%;border-collapse:collapse}}
-th,td{{padding:12px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.05)}}
-th{{color:#5a7a8f;font-weight:600;font-size:.85em;text-transform:uppercase;letter-spacing:.5px}}
-tbody tr:hover{{background:rgba(79,195,247,0.06)}}
+th,td{{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}}
+th{{color:var(--muted);font-weight:600;font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.5px}}
+tbody tr:hover{{background:var(--bg-subtle)}}
 .issue-tag{{
-  display:inline-block;padding:2px 10px;border-radius:10px;
-  background:rgba(224,112,80,0.2);color:#f09070;font-size:.82em;font-weight:700;
+  display:inline-block;padding:2px 10px;border-radius:999px;
+  background:color-mix(in srgb, var(--pan-b) 14%, var(--card));
+  color:var(--pan-b);font-size:var(--text-sm);font-weight:700;
 }}
-a{{color:#4fc3f7;text-decoration:none;transition:color .15s}}
-a:hover{{color:#81d4fa;text-decoration:underline}}
-.chain-row{{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}}
+a{{color:var(--accent);text-decoration:none;transition:color .15s}}
+a:hover{{color:var(--primary);text-decoration:underline}}
+.chain-row{{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}}
 .chain-row:last-child{{border-bottom:none}}
 .chain-dot{{
   width:12px;height:12px;border-radius:3px;flex-shrink:0;
@@ -232,26 +234,19 @@ a:hover{{color:#81d4fa;text-decoration:underline}}
 .chain-dot.mid{{background:#e67e22}}
 .chain-dot.down{{background:#27ae60}}
 .chain-dot.inv{{background:#8e44ad}}
-.chain-name{{font-weight:600;min-width:140px;font-size:.95em}}
-.chain-desc{{color:#5a7a8f;font-size:.88em}}
+.chain-name{{font-weight:600;min-width:140px;font-size:var(--text-md)}}
+.chain-desc{{color:var(--muted);font-size:var(--text-sm)}}
 .footer{{
-  text-align:center;padding:30px;color:#3a5a6f;font-size:.85em;
-  border-top:1px solid rgba(255,255,255,0.05);margin-top:24px;
+  text-align:center;padding:30px;color:var(--muted);font-size:var(--text-sm);
+  border-top:1px solid var(--border);margin-top:var(--s-6);
 }}
-.waves{{
-  position:relative;height:40px;margin-top:-1px;overflow:hidden;
-}}
-.waves svg{{display:block;width:100%;height:100%}}
 </style>
 </head>
 <body>
-<div class="waves">
-  <svg viewBox="0 0 1440 40" preserveAspectRatio="none">
-    <path d="M0,20 C240,30 480,5 720,18 C960,30 1200,8 1440,20 L1440,40 L0,40 Z" fill="rgba(255,255,255,0.02)"/>
-  </svg>
-</div>
+{OS_NAV}
 <div class="container">
 <div class="header">
+<div class="kicker">B · 经营盘 · 招标雷达</div>
 <h1>广东省地质海洋企业招投标情报系统</h1>
 <p>自动采集 · 智能分析 · 商机发现 · 每周更新</p>
 <div class="refresh">最后更新: {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}</div>
@@ -266,7 +261,7 @@ a:hover{{color:#81d4fa;text-decoration:underline}}
 <h2>最新报告</h2>
 <table>
 <thead><tr><th>期号</th><th>日期</th><th>大小</th></tr></thead>
-<tbody>{rows_html or '<tr><td colspan="3" style="color:#3a5a6f;text-align:center;padding:24px;">暂无报告，首次采集后将自动生成</td></tr>'}</tbody>
+<tbody>{rows_html or '<tr><td colspan="3" style="color:var(--muted);text-align:center;padding:24px;">暂无报告，首次采集后将自动生成</td></tr>'}</tbody>
 </table>
 </div>
 <div class="section">
@@ -294,7 +289,7 @@ a:hover{{color:#81d4fa;text-decoration:underline}}
 </div>
 <div class="section">
 <h2>数据来源</h2>
-<p style="color:#5a7a8f;line-height:2;">广东省招标投标监管网 &nbsp;·&nbsp; 广东省公共资源交易平台 &nbsp;·&nbsp; 广州公共资源交易中心 &nbsp;·&nbsp; 中国招标投标公共服务平台</p>
+<p style="color:var(--muted);line-height:2;">广东省招标投标监管网 &nbsp;·&nbsp; 广东省公共资源交易平台 &nbsp;·&nbsp; 广州公共资源交易中心 &nbsp;·&nbsp; 中国招标投标公共服务平台</p>
 </div>
 <div class="footer">
 <p>本系统自动采集公开招标信息并生成分析报告，仅供参考。投资决策请以官方公告为准。</p>
