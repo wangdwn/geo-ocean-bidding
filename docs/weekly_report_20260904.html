@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>广东省地质海洋企业招投标情报周报 第1期 - 2026-09-04</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ocean-deep: #062040;
+    --ocean-dark: #0a2f5a;
+    --ocean-mid: #0d6b7d;
+    --ocean-light: #14a085;
+    --coral: #e07050;
+    --coral-light: #fadbd8;
+    --gold: #f0c040;
+    --sand: #f5efe0;
+    --surface: #f0f4f8;
+    --surface-alt: #e8eef5;
+    --text-primary: #1a2a3a;
+    --text-secondary: #5a6d7e;
+    --text-muted: #8a9bab;
+    --border: #d8e0e8;
+    --white: #ffffff;
+    --upstream: #3498db;
+    --midstream: #e67e22;
+    --downstream: #27ae60;
+    --investment: #8e44ad;
+    --radius: 12px;
+    --shadow-sm: 0 1px 3px rgba(6,32,64,0.06);
+    --shadow-md: 0 4px 16px rgba(6,32,64,0.08);
+    --shadow-lg: 0 8px 32px rgba(6,32,64,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(180deg, #e8eef5 0%, #f0f4f8 30%, #f7f9fb 100%);
+    color: var(--text-primary); line-height: 1.8; 
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
+  
+  /* ===== 头部 ===== */
+  .hero {
+    position: relative;
+    background: linear-gradient(160deg, #031528 0%, #062040 25%, #0a2f5a 60%, #0d4a6e 100%);
+    color: var(--white); padding: 48px 40px 36px;
+    margin: 0 -16px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 20% 80%, rgba(13,107,125,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 20%, rgba(20,160,133,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 60% 90%, rgba(240,192,64,0.08) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .hero-waves {
+    position: absolute; bottom: -2px; left: 0; width: 100%;
+    height: 60px; pointer-events: none;
+  }
+  .hero-waves svg { display: block; width: 100%; height: 100%; }
+  .hero-inner { position: relative; z-index: 1; }
+  
+  /* 期号徽章 */
+  .issue-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 6px 20px 6px 8px;
+    margin-bottom: 20px;
+    font-size: 14px; color: rgba(255,255,255,0.85);
+  }
+  .issue-badge .num-circle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--coral), #e88060);
+    font-size: 18px; font-weight: 800; color: #fff;
+    box-shadow: 0 2px 12px rgba(224,112,80,0.5);
+  }
+  
+  .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: 2px; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 15px; opacity: 0.8; margin-bottom: 4px; }
+  .hero .period {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 12px; padding: 6px 16px;
+    background: rgba(255,255,255,0.08); border-radius: 20px;
+    font-size: 13px; opacity: 0.75;
+  }
+  .hero .period .dot { width: 8px; height: 8px; border-radius: 50%; background: #4fc3f7; }
+  
+  /* ===== 统计卡片 ===== */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-top: -20px; position: relative; z-index: 2;
+  }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 24px 20px; text-align: center;
+    box-shadow: var(--shadow-md); transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.card-notices::before { background: var(--ocean-mid); }
+  .stat-card.card-budget::before { background: var(--coral); }
+  .stat-card.card-avg::before { background: var(--ocean-light); }
+  .stat-card.card-invest::before { background: var(--gold); }
+  
+  .stat-card .stat-icon { font-size: 28px; margin-bottom: 8px; }
+  .stat-card .stat-value {
+    font-size: 34px; font-weight: 800; color: var(--ocean-deep);
+    line-height: 1.2;
+  }
+  .stat-card.card-budget .stat-value { color: var(--coral); }
+  .stat-card.card-invest .stat-value { color: #d4a017; }
+  .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .stat-card .stat-unit { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+  
+  /* ===== 区块通用 ===== */
+  .section {
+    background: var(--white); border-radius: var(--radius);
+    padding: 28px; margin-top: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .section-header .section-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .section-header .section-icon.icon-chain { background: #e8f4fd; color: var(--upstream); }
+  .section-header .section-icon.icon-star { background: #fff3e0; color: var(--midstream); }
+  .section-header .section-icon.icon-map { background: #e8f5e9; color: var(--downstream); }
+  .section-header .section-icon.icon-gap { background: #fce4ec; color: var(--coral); }
+  .section-header .section-icon.icon-building { background: #f3e5f5; color: var(--investment); }
+  .section-header h2 { font-size: 18px; font-weight: 700; color: var(--ocean-deep); }
+  
+  /* ===== 双栏布局 ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  
+  /* ===== 图表容器 ===== */
+  .chart-wrap { position: relative; width: 100%; }
+  .chart-wrap canvas { max-height: 320px; }
+  
+  /* ===== 产业链小卡片 ===== */
+  .chain-mini-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .chain-mini {
+    padding: 16px; border-radius: 10px; text-align: center;
+    border: 1px solid var(--border); transition: transform 0.2s;
+  }
+  .chain-mini:hover { transform: translateY(-1px); }
+  .chain-mini.upstream { border-left: 3px solid var(--upstream); background: #f5fafe; }
+  .chain-mini.midstream { border-left: 3px solid var(--midstream); background: #fef9f4; }
+  .chain-mini.downstream { border-left: 3px solid var(--downstream); background: #f4fdf7; }
+  .chain-mini.investment { border-left: 3px solid var(--investment); background: #faf5fc; }
+  .chain-mini .cm-count { font-size: 26px; font-weight: 800; color: var(--ocean-deep); }
+  .chain-mini .cm-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  
+  /* ===== 商机推荐 ===== */
+  .opp-list { display: flex; flex-direction: column; gap: 12px; }
+  .opp-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 18px; border-radius: 10px; border: 1px solid var(--border);
+    transition: box-shadow 0.2s, border-color 0.2s;
+    background: var(--white);
+  }
+  .opp-item:hover { box-shadow: var(--shadow-md); border-color: var(--ocean-mid); }
+  .opp-rank {
+    min-width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px; color: #fff; flex-shrink: 0;
+  }
+  .opp-rank.rank-1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+  .opp-rank.rank-2 { background: linear-gradient(135deg, #e67e22, #d35400); }
+  .opp-rank.rank-3 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+  .opp-rank.rank-other { background: #b0bec5; }
+  .opp-body { flex: 1; min-width: 0; }
+  .opp-title {
+    font-size: 15px; font-weight: 600; color: var(--ocean-deep); margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .opp-title a { color: inherit; text-decoration: none; }
+  .opp-title a:hover { color: var(--ocean-mid); }
+  .opp-meta {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    font-size: 12px; color: var(--text-muted);
+  }
+  .opp-meta .meta-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 12px; background: var(--surface);
+  }
+  .opp-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .opp-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; background: #e8f4fd; color: #1976d2;
+  }
+  .opp-score-row { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+  .opp-score-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: #fff;
+  }
+  .opp-score-circle.high { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+  .opp-score-circle.medium { background: linear-gradient(135deg, #f39c12, #f1c40f); }
+  .opp-score-circle.low { background: linear-gradient(135deg, #95a5a6, #bdc3c7); }
+  .opp-score-label { font-size: 10px; color: var(--text-muted); }
+  
+  /* ===== 产业链缺口 ===== */
+  .gap-list { display: flex; flex-direction: column; gap: 10px; }
+  .gap-card {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 16px 18px; border-radius: 10px;
+    background: #fffdf5; border: 1px solid #f0e8c0;
+    border-left: 4px solid var(--gold);
+  }
+  .gap-card .gap-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .gap-card .gap-type { font-size: 12px; color: #b8860b; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .gap-card .gap-desc { font-size: 14px; color: var(--text-primary); margin-top: 2px; }
+  .gap-card .gap-opp { font-size: 13px; color: var(--ocean-light); margin-top: 4px; font-weight: 500; }
+  
+  /* ===== 关键词热度 ===== */
+  .kw-cloud { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0; }
+  .kw-tag {
+    display: inline-block; padding: 5px 14px; border-radius: 20px;
+    font-size: 13px; transition: transform 0.15s;
+  }
+  .kw-tag:hover { transform: scale(1.08); }
+  .kw-tag.xl { font-size: 20px; padding: 8px 20px; }
+  .kw-tag.lg { font-size: 17px; padding: 7px 18px; }
+  .kw-tag.md { font-size: 14px; }
+  .kw-tag.sm { font-size: 12px; }
+  .kw-tag.hot { background: #ffebee; color: #c62828; font-weight: 700; }
+  .kw-tag.warm { background: #fff3e0; color: #e65100; font-weight: 600; }
+  .kw-tag.normal { background: #e8eef5; color: #5a6d7e; }
+  
+  /* ===== 表格 ===== */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead th {
+    background: var(--surface); padding: 12px 16px; text-align: left;
+    font-size: 12px; color: var(--text-muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--surface-alt);
+    font-size: 13px; color: var(--text-primary);
+  }
+  .data-table tbody tr:hover { background: #f8fafc; }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  
+  /* 评分标签 */
+  .score-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+  }
+  .score-tag.high { background: #e8f5e9; color: #2e7d32; }
+  .score-tag.medium { background: #fff3e0; color: #e65100; }
+  .score-tag.low { background: #fce4ec; color: #c62828; }
+  
+  /* 地区分布 - 简单条形图容器用于 Chart.js */
+  .region-chart-wrap { height: 400px; }
+  
+  /* 产业链金额图 */
+  .chain-bar-wrap { height: 300px; }
+  
+  /* ===== 页脚 ===== */
+  .footer {
+    text-align: center; padding: 32px 20px; margin-top: 24px;
+    color: var(--text-muted); font-size: 13px;
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .footer .disclaimer {
+    margin-top: 8px; padding: 10px 20px;
+    background: #fef9f4; border-radius: 8px;
+    display: inline-block; font-size: 12px; color: #b8860b;
+  }
+  
+  /* ===== 响应式 ===== */
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .chain-mini-cards { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 22px; }
+    .hero { padding: 32px 20px 28px; }
+  }
+  
+  @media print {
+    body { background: #fff; }
+    .container { padding: 0; }
+    .section { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== 头部 ===== -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="issue-badge">
+        <span class="num-circle">1</span>
+        <span>第 <strong>1</strong> 期 · 地质海洋招投标情报周报</span>
+      </div>
+      <h1>广东省地质海洋企业招投标情报周报</h1>
+      <p class="subtitle">上下游产业链动态 · 商机识别 · 招商引资节点追踪</p>
+      <div class="period">
+        <span class="dot"></span>
+        2026-02-16 ~ 2026-09-04
+        <span style="margin:0 4px;opacity:0.5;">|</span>
+        生成时间: 2026-09-04 16:15:12
+      </div>
+    </div>
+    <div class="hero-waves">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+        <path d="M0,30 C240,50 480,10 720,25 C960,40 1200,15 1440,30 L1440,60 L0,60 Z" fill="#e8eef5" opacity="0.6"/>
+        <path d="M0,40 C200,20 500,50 800,35 C1100,20 1300,45 1440,35 L1440,60 L0,60 Z" fill="#f0f4f8" opacity="0.8"/>
+        <path d="M0,50 C300,35 600,55 900,45 C1200,35 1350,50 1440,48 L1440,60 L0,60 Z" fill="#f7f9fb"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ===== 概览统计 ===== -->
+  <div class="stats-row">
+    <div class="stat-card card-notices">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value">14</div>
+      <div class="stat-unit">条</div>
+      <div class="stat-label">本期公告总数</div>
+    </div>
+    <div class="stat-card card-budget">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value">2520.1</div>
+      <div class="stat-unit">万元</div>
+      <div class="stat-label">涉及总金额</div>
+    </div>
+    <div class="stat-card card-avg">
+      <div class="stat-icon">📊</div>
+      <div class="stat-value">180.0</div>
+      <div class="stat-unit">万元</div>
+      <div class="stat-label">平均项目金额</div>
+    </div>
+    <div class="stat-card card-invest">
+      <div class="stat-icon">🏗️</div>
+      <div class="stat-value">0</div>
+      <div class="stat-unit">条</div>
+      <div class="stat-label">招商引资相关</div>
+    </div>
+  </div>
+
+  <!-- ===== 产业链分布 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-chain">🔗</div>
+      <h2>产业链分布分析</h2>
+    </div>
+    
+    <div class="chain-mini-cards">
+      
+      
+      <div class="chain-mini upstream">
+        <div class="cm-count">6</div>
+        <div class="cm-label">上游·勘探与装备</div>
+      </div>
+      
+      
+      <div class="chain-mini midstream">
+        <div class="cm-count">3</div>
+        <div class="cm-label">中游·工程与施工</div>
+      </div>
+      
+      
+      <div class="chain-mini downstream">
+        <div class="cm-count">1</div>
+        <div class="cm-label">下游·监测与服务</div>
+      </div>
+      
+      
+      <div class="chain-mini investment">
+        <div class="cm-count">0</div>
+        <div class="cm-label">招商引资</div>
+      </div>
+      
+    </div>
+
+    <div class="two-col">
+      <!-- 产业链公告数饼图 -->
+      <div class="chart-wrap">
+        <canvas id="chainPieChart" height="280"></canvas>
+      </div>
+      <!-- 产业链金额柱状图 -->
+      <div class="chart-wrap">
+        <canvas id="chainBudgetChart" height="280"></canvas>
+      </div>
+    </div>
+
+    <!-- 产业链详情表格 -->
+    <table class="data-table" style="margin-top:20px;">
+      <thead>
+        <tr>
+          <th>产业链环节</th>
+          <th>公告数</th>
+          <th>总金额(万)</th>
+          <th>平均商机分</th>
+          <th>代表项目</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        
+        <tr>
+          <td><strong>上游·勘探与装备</strong></td>
+          <td>6</td>
+          <td>882</td>
+          <td>
+            <span class="score-tag low">
+              17.6
+            </span>
+          </td>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            
+            广东徐闻珊瑚礁国家级自然保护区科普宣传和可视化监测能力提升、综合科学考察、...
+          </td>
+        </tr>
+        
+        
+        <tr>
+          <td><strong>中游·工程与施工</strong></td>
+          <td>3</td>
+          <td>0</td>
+          <td>
+            <span class="score-tag low">
+              18.2
+            </span>
+          </td>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            
+            广东风电(汕尾)公司红海湾五海上风电项目500kV海上升压站和海上无功补偿站建造及运输工程
+          </td>
+        </tr>
+        
+        
+        <tr>
+          <td><strong>下游·监测与服务</strong></td>
+          <td>1</td>
+          <td>441</td>
+          <td>
+            <span class="score-tag low">
+              15.2
+            </span>
+          </td>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            
+            广东省揭阳市海洋生态修复项目评价论证服务
+          </td>
+        </tr>
+        
+        
+        <tr>
+          <td><strong>招商引资</strong></td>
+          <td>0</td>
+          <td>0</td>
+          <td>
+            <span class="score-tag low">
+              0.0
+            </span>
+          </td>
+          <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            
+            -
+          </td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 商机推荐 TOP ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-star">⭐</div>
+      <h2>商机推荐 TOP 14</h2>
+    </div>
+    
+    
+    <div class="opp-list">
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-1">
+          1
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.dlztb.com/news/202608/31/892042.html" target="_blank" rel="noopener noreferrer">广东风电(汕尾)公司红海湾五海上风电项目500kV海上升压站和海上无功补偿站建造及运输工程</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 汕尾市</span>
+            <span class="meta-item">📅 2026-08-31</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海上风电</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            26.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-2">
+          2
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202606/t20260612_26744257.htm" target="_blank" rel="noopener noreferrer">广东徐闻珊瑚礁国家级自然保护区科普宣传和可视化监测能力提升、综合科学考察、海上边界浮标和近岸边界界桩（地形勘测及珊瑚分布调查）</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 湛江市</span>
+            <span class="meta-item">📅 2026-06-12</span>
+            <span class="meta-item">💵 397.87万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海洋测绘</span>
+            
+            <span class="opp-tag">海洋工程</span>
+            
+            <span class="opp-tag">工程测量</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            23.8
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-3">
+          3
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="https://www.dlnyzb.com/detail/29196357" target="_blank" rel="noopener noreferrer">广东省龙川县麻布岗盆地铀多金属矿普查项目钻探服务</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 河源市</span>
+            <span class="meta-item">📅 2026-03-07</span>
+            <span class="meta-item">💵 119.88万</span>
+            <span class="meta-item">竞争性磋商</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">地质调查</span>
+            
+            <span class="opp-tag">钻探</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            18.5
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          4
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.dlztb.com/chinapowerbid/202604/147833.html" target="_blank" rel="noopener noreferrer">风电公司汕尾红海湾五海上风电项目500kV海缆采购及敷设</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 汕尾市</span>
+            <span class="meta-item">📅 2026-04-20</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海底电缆</span>
+            
+            <span class="opp-tag">海上风电</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            17.5
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          5
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="https://yj.jrzb.com/purchases/2026-08-03.b0b4e971709e833e5fc3291379395a9b" target="_blank" rel="noopener noreferrer">矿外资源拓展重大专项--广东省阳春市尧垌铜多金属矿勘查项目（2026年度）</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 阳江市</span>
+            <span class="meta-item">📅 2026-08-03</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">钻探</span>
+            
+            <span class="opp-tag">地形测量</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            15.5
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          6
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="https://www.ccgp.gov.cn/cggg/zygg/zbgg/202606/t20260618_26781731.htm" target="_blank" rel="noopener noreferrer">珠江口重点水域多功能化航标建设</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 广州市</span>
+            <span class="meta-item">📅 2026-06-18</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">中标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海洋仪器</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            15.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          7
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.ccgp.gov.cn/cggg/zygg/gkzb/202603/t20260312_26261888.htm" target="_blank" rel="noopener noreferrer">南海重点岛礁及周边海域生态环境科研调查船舶保障技术服务</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 广州市</span>
+            <span class="meta-item">📅 2026-03-12</span>
+            <span class="meta-item">💵 364.0万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">调查船</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            15.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          8
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260327_26328863.htm" target="_blank" rel="noopener noreferrer">广东省揭阳市海洋生态修复项目评价论证服务</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 揭阳市</span>
+            <span class="meta-item">📅 2026-03-27</span>
+            <span class="meta-item">💵 441.0万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海洋生态修复</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            15.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          9
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.dlztb.com/quote/202604/96794.html" target="_blank" rel="noopener noreferrer">广东汕尾风电公司红海湾五海上风电项目风机基础及风机安装工程</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 汕尾市</span>
+            <span class="meta-item">📅 2026-04-16</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海上风电</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            14.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          10
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="https://bid.tgnet.com/Bidding/37642086582735199205n1.html" target="_blank" rel="noopener noreferrer">汕尾红海湾四海上风电示范项目海上风力发电机组（含塔筒）及附属设备采购</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 汕尾市</span>
+            <span class="meta-item">📅 2026-08-01</span>
+            <span class="meta-item">💵 -万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+          <div class="opp-tags">
+            
+            <span class="opp-tag">海上风电</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            14.2
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          11
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202607/t20260710_26909201.htm" target="_blank" rel="noopener noreferrer">广东省重点海域综合治理攻坚及海洋生态环境保护支撑服务（2026年）</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 广州市</span>
+            <span class="meta-item">📅 2026-07-10</span>
+            <span class="meta-item">💵 340.0万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            12.0
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          12
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202606/t20260604_26686393.htm" target="_blank" rel="noopener noreferrer">广东徐闻珊瑚礁国家级自然保护区科普宣传和可视化监测能力提升、综合科学考察、海上边界浮标和近岸边界界桩（科普宣传和可视化监测能力提升）</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 湛江市</span>
+            <span class="meta-item">📅 2026-06-04</span>
+            <span class="meta-item">💵 180.36万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            12.0
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          13
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260318_26285201.htm" target="_blank" rel="noopener noreferrer">白云区地质灾害气象自动监测设备采购项目</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 广州市</span>
+            <span class="meta-item">📅 2026-03-18</span>
+            <span class="meta-item">💵 377.0万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            12.0
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+      <div class="opp-item">
+        <div class="opp-rank rank-other">
+          14
+        </div>
+        <div class="opp-body">
+          <div class="opp-title">
+            
+            <a href="http://www.zbtb.com.cn/zb/65619864/" target="_blank" rel="noopener noreferrer">广东省重点海域锆铪等关键金属矿产资源调查评价</a>
+            
+          </div>
+          <div class="opp-meta">
+            <span class="meta-item">📍 广东省</span>
+            <span class="meta-item">📅 2026-04-24</span>
+            <span class="meta-item">💵 300.0万</span>
+            <span class="meta-item">招标公告</span>
+            
+          </div>
+          
+        </div>
+        <div class="opp-score-row">
+          <div class="opp-score-circle low">
+            12.0
+          </div>
+          <div class="opp-score-label">商机评分</div>
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <!-- ===== 可视化分析区 ===== -->
+  <div class="two-col">
+    <!-- 地区分布 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon icon-map">🗺️</div>
+        <h2>地区分布</h2>
+      </div>
+      <div class="region-chart-wrap">
+        <canvas id="regionChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- 评分分布 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon icon-star">📈</div>
+        <h2>商机评分分布</h2>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="scoreDistChart" height="280"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 关键词热度 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:#e8f4fd;color:#1976d2;">🔥</div>
+      <h2>关键词热度排行</h2>
+    </div>
+    
+    <div class="kw-cloud">
+      
+      
+      
+      <span class="kw-tag md warm">海上风电 <small>(4)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">钻探 <small>(2)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">地形测量 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">海洋仪器 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">海洋测绘 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">海洋工程 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">工程测量 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">海底电缆 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">海洋生态修复 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">调查船 <small>(1)</small></span>
+      
+      
+      
+      <span class="kw-tag sm normal">地质调查 <small>(1)</small></span>
+      
+    </div>
+    
+  </div>
+
+  <!-- ===== 产业链缺口分析 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-gap">⚠️</div>
+      <h2>产业链衔接缺口分析</h2>
+    </div>
+    
+    <div class="gap-list">
+      
+      <div class="gap-card">
+        <div class="gap-icon">🔍</div>
+        <div>
+          <div class="gap-type">midstream-downstream gap</div>
+          <div class="gap-desc">中游海上风电项目活跃,但下游海洋环境监测配套项目偏少</div>
+          <div class="gap-opp">💡 商机建议: 海上风电后期运维和海洋环境监测服务存在商机</div>
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  <!-- ===== 活跃主体 ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-building">🏢</div>
+      <h2>活跃招标/中标主体</h2>
+    </div>
+    
+    <table class="data-table">
+      <thead>
+        <tr><th>企业名称</th><th>类型</th><th>出现次数</th><th>涉及金额(万)</th><th>产业链</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td><strong>广东徐闻珊瑚礁国家级自然保护区管理局</strong></td>
+          <td>tenderer</td>
+          <td>2</td>
+          <td>578.2</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>广东汕尾风电公司</strong></td>
+          <td>tenderer</td>
+          <td>2</td>
+          <td>0.0</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>揭阳市土地整理中心</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>441.0</td>
+          <td>downstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>广州市白云区气象局</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>377.0</td>
+          <td>-</td>
+        </tr>
+        
+        <tr>
+          <td><strong>生态环境部华南环境科学研究所</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>364.0</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>广东省生态环境厅</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>340.0</td>
+          <td>-</td>
+        </tr>
+        
+        <tr>
+          <td><strong>广东省地质局河源地质调查中心</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>119.9</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>广东风电(汕尾)公司</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>0.0</td>
+          <td>midstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>凡口铅锌矿</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>0.0</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>交通运输部南海航海保障中心广州航标处</strong></td>
+          <td>tenderer</td>
+          <td>1</td>
+          <td>0.0</td>
+          <td>upstream</td>
+        </tr>
+        
+        <tr>
+          <td><strong>天津天元海科技开发有限公司</strong></td>
+          <td>winner</td>
+          <td>1</td>
+          <td>793.8</td>
+          <td>upstream</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </div>
+
+  <!-- ===== 页脚 ===== -->
+  <div class="footer">
+    <p>广东省地质海洋企业招投标情报系统 · 第1期 · 自动生成于 2026-09-04 16:15:12</p>
+    <p style="margin-top:4px;">数据来源: 广东省招标投标监管网 · 广州公共资源交易中心 · 中国招标投标公共服务平台 · 广东省公共资源交易平台</p>
+    <p class="disclaimer">⚠️ 本报告由系统自动采集公开招标信息并分析生成，仅供参考。投资决策请以官方公告为准。</p>
+  </div>
+
+</div>
+
+<!-- ===== Chart.js 初始化 ===== -->
+<script>
+(function() {
+  const colors = {
+    upstream: '#3498db',
+    midstream: '#e67e22', 
+    downstream: '#27ae60',
+    investment: '#8e44ad',
+  };
+  const chainNames = {
+    upstream: '上游·勘探与装备',
+    midstream: '中游·工程与施工',
+    downstream: '下游·监测与服务',
+    investment: '招商引资',
+  };
+
+  // ===== 产业链公告数饼图 =====
+  const chainData = [{"budget": 881.75, "count": 6, "key": "upstream"}, {"budget": 0, "count": 3, "key": "midstream"}, {"budget": 441.0, "count": 1, "key": "downstream"}, {"budget": 0, "count": 0, "key": "investment"}];
+  (function() {
+    const labels = chainData.map(d => chainNames[d.key] || d.key);
+    const counts = chainData.map(d => d.count);
+    const bgColors = chainData.map(d => colors[d.key] || '#95a5a6');
+    const ctx = document.getElementById('chainPieChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: counts,
+          backgroundColor: bgColors,
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverBorderWidth: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 20, usePointStyle: true, pointStyleWidth: 10, font: { size: 13 } }
+          },
+          title: {
+            display: true,
+            text: '公告数分布',
+            font: { size: 15, weight: 'bold' },
+            color: '#1a2a3a',
+            padding: { bottom: 16 }
+          }
+        },
+      }
+    });
+  })();
+
+  // ===== 产业链金额柱状图 =====
+  (function() {
+    const labels = chainData.map(d => chainNames[d.key] || d.key);
+    const budgets = chainData.map(d => Math.round(d.budget || 0));
+    const bgColors = chainData.map(d => colors[d.key] || '#95a5a6');
+    const ctx = document.getElementById('chainBudgetChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '总金额(万元)',
+          data: budgets,
+          backgroundColor: bgColors.map(c => c + '99'),
+          borderColor: bgColors,
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: '各环节涉及金额',
+            font: { size: 15, weight: 'bold' },
+            color: '#1a2a3a',
+            padding: { bottom: 16 }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: '#e8eef5' },
+            ticks: { callback: v => v >= 10000 ? (v/10000).toFixed(1)+'亿' : v+'万' }
+          }
+        }
+      }
+    });
+  })();
+
+  // ===== 地区分布横向柱状图 =====
+  const regionData = [{"count": 4, "name": "\u5e7f\u5dde\u5e02"}, {"count": 4, "name": "\u6c55\u5c3e\u5e02"}, {"count": 2, "name": "\u6e5b\u6c5f\u5e02"}, {"count": 1, "name": "\u5e7f\u4e1c\u7701"}, {"count": 1, "name": "\u63ed\u9633\u5e02"}, {"count": 1, "name": "\u6cb3\u6e90\u5e02"}, {"count": 1, "name": "\u9633\u6c5f\u5e02"}];
+  (function() {
+    if (!regionData || regionData.length === 0) return;
+    const labels = regionData.map(d => d.name);
+    const counts = regionData.map(d => d.count);
+    const ctx = document.getElementById('regionChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '公告数',
+          data: counts,
+          backgroundColor: counts.map((_, i) => {
+            const t = i / Math.max(counts.length - 1, 1);
+            return `hsla(${200 + t * 40}, 60%, ${55 - t * 10}%, 0.85)`;
+          }),
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: '#e8eef5' },
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  })();
+
+  // ===== 商机评分分布柱状图 =====
+  const scoreData = [8, 2, 0, 0, 0];
+  (function() {
+    const labels = ['0-20', '21-40', '41-60', '61-80', '81-100'];
+    const ctx = document.getElementById('scoreDistChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '公告数量',
+          data: scoreData,
+          backgroundColor: [
+            'rgba(231,76,60,0.7)',
+            'rgba(230,126,34,0.7)',
+            'rgba(241,196,15,0.7)',
+            'rgba(46,204,113,0.7)',
+            'rgba(39,174,96,0.85)',
+          ],
+          borderColor: [
+            '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#27ae60'
+          ],
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: '公告评分区间',
+            font: { size: 15, weight: 'bold' },
+            color: '#1a2a3a',
+            padding: { bottom: 16 }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: '#e8eef5' },
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  })();
+
+})();
+</script>
+</body>
+</html>

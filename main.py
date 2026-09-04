@@ -19,6 +19,7 @@ from analyzer import AnalysisEngine
 from report_generator import ReportGenerator
 from demo_data import generate_demo_data
 from ocean_chrome import DS_HEAD, OS_NAV
+from public_data import to_db_records, notices_json_path
 
 # QQ推送可选(仅在本地环境使用)
 try:
@@ -45,12 +46,16 @@ def setup_logging():
     return logging.getLogger("main")
 
 
-def run_collect(db: Database, days: int = 7, demo: bool = False):
-    """执行数据采集"""
+def run_collect(db: Database, days: int = 7, demo: bool = False, from_json: bool = False):
+    """执行数据采集。公开站点优先；失败时回退到已核验的 notices.json，不生成虚构招标。"""
     logger = logging.getLogger("collect")
-    
-    if demo:
-        logger.info("=== 使用演示数据模式 ===")
+    notices = []
+
+    if from_json:
+        logger.info("=== 使用公开核验数据 docs/data/notices.json ===")
+        notices = to_db_records()
+    elif demo:
+        logger.info("=== 使用本地演示数据（不会写入 GitHub Pages 默认流程） ===")
         notices = generate_demo_data(days=days, count=60)
     else:
         logger.info("=== 开始实时数据采集 ===")
@@ -60,14 +65,18 @@ def run_collect(db: Database, days: int = 7, demo: bool = False):
         finally:
             collector.close()
 
+    if not notices and not demo:
+        json_path = notices_json_path()
+        if os.path.exists(json_path):
+            logger.warning("实时采集为空，回退到已核验的 notices.json（不生成虚构记录）")
+            notices = to_db_records(path=json_path)
+        else:
+            logger.warning("未采集到任何数据，且无公开核验 JSON，跳过写入")
+            return 0
+
     if notices:
         new_count, update_count = db.batch_upsert_notices(notices)
         logger.info(f"采集完成: 新增 {new_count} 条, 更新 {update_count} 条")
-    else:
-        logger.warning("未采集到任何数据, 自动切换为演示数据模式")
-        notices = generate_demo_data(days=days, count=40)
-        new_count, update_count = db.batch_upsert_notices(notices)
-        logger.info(f"演示数据写入: {new_count} 条")
 
     return len(notices)
 
@@ -138,23 +147,58 @@ def run_report(db: Database, db_path: str, report_dir: str, days: int = 7) -> st
     return report_path
 
 
-def generate_pages_index(pages_dir: str, db: Database):
-    """生成 GitHub Pages 索引页 - 海洋地质主题"""
+def _report_rows_html(pages_dir: str) -> tuple:
+    """Build report table rows from weekly_report_*.html files."""
     import glob as _glob
-    _log = logging.getLogger("pages_index")
     reports = sorted(_glob.glob(os.path.join(pages_dir, "weekly_report_*.html")), reverse=True)
-    
-    total = db.get_all_notices_count()
-    report_count = len(reports)
-    
-    # 获取最近统计
     rows_html = ""
     for i, rp in enumerate(reports[:10]):
         fname = os.path.basename(rp)
         date_str = fname.replace("weekly_report_", "").replace(".html", "")
-        issue = report_count - i
-        rows_html += f'<tr><td><span class="issue-tag">第{issue}期</span></td><td><a href="{fname}">{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}</a></td><td>{os.path.getsize(rp)//1024} KB</td></tr>\n'
-    
+        issue = len(reports) - i
+        rows_html += (
+            f'<tr><td><span class="issue-tag">第{issue}期</span></td>'
+            f'<td><a href="{fname}">{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}</a></td>'
+            f'<td>{os.path.getsize(rp)//1024} KB</td></tr>\n'
+        )
+    return reports, rows_html
+
+
+def generate_pages_index(pages_dir: str, db: Database):
+    """生成 GitHub Pages 索引页 - 海洋地质主题。
+
+    若 docs/index.html 已是列表雷达页（data-page=bidding-radar），只刷新报告表格，
+    避免覆盖内容优先的列表页 / 其他设计 PR。
+    """
+    import re as _re
+    _log = logging.getLogger("pages_index")
+    reports, rows_html = _report_rows_html(pages_dir)
+    report_count = len(reports)
+    total = db.get_all_notices_count()
+    index_path = os.path.join(pages_dir, "index.html")
+
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            existing = f.read()
+        if 'data-page="bidding-radar"' in existing:
+            updated = _re.sub(
+                r'(<tbody id="report-rows">)(.*?)(</tbody>)',
+                lambda m: m.group(1) + (rows_html or m.group(2)) + m.group(3),
+                existing,
+                count=1,
+                flags=_re.S,
+            )
+            updated = _re.sub(
+                r'(id="stat-reports">)(.*?)(</div>)',
+                rf'\g<1>{report_count}\3',
+                updated,
+                count=1,
+            )
+            with open(index_path, "w", encoding="utf-8") as f:
+                f.write(updated)
+            _log.info(f"保留列表雷达页，已刷新报告表格: {index_path}")
+            return
+
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -249,7 +293,7 @@ a:hover{{color:var(--primary);text-decoration:underline}}
 <div class="kicker">B · 经营盘 · 招标雷达</div>
 <h1>广东省地质海洋企业招投标情报系统</h1>
 <p>自动采集 · 智能分析 · 商机发现 · 每周更新</p>
-<div class="refresh">最后更新: {datetime.now().strftime('%Y-%m-%d %H:%M UTC')}</div>
+<div class="refresh">数据更新于 {datetime.now().strftime('%Y-%m-%d')}</div>
 </div>
 <div class="cards">
 <div class="card"><div class="num">{total}</div><div class="label">累计公告</div></div>
@@ -307,7 +351,9 @@ a:hover{{color:var(--primary);text-decoration:underline}}
 
 def main():
     parser = argparse.ArgumentParser(description="广东省地质海洋企业招投标情报系统")
-    parser.add_argument("--demo", action="store_true", help="使用演示数据(不实际爬取)")
+    parser.add_argument("--demo", action="store_true", help="使用本地虚构演示数据(不会用于默认 Pages 流程)")
+    parser.add_argument("--from-json", action="store_true", dest="from_json",
+                        help="从 docs/data/notices.json 加载已核验的公开公告")
     parser.add_argument("--days", type=int, default=7, help="采集最近N天的数据")
     parser.add_argument("--skip-collect", action="store_true", help="跳过采集步骤")
     parser.add_argument("--skip-analyze", action="store_true", help="跳过分析步骤")
@@ -329,7 +375,7 @@ def main():
     try:
         if not args.report_only:
             if not args.skip_collect:
-                run_collect(db, days=args.days, demo=args.demo)
+                run_collect(db, days=args.days, demo=args.demo, from_json=args.from_json)
             if not args.skip_analyze:
                 run_analyze(db)
 
